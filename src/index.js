@@ -1,20 +1,30 @@
-const notesContainer = document.getElementById("app"); //전체 컨테이너
-const addNoteButton = document.querySelector(".add-note"); //추가버튼
-
-getNotes().forEach((note) => {
-  const noteElement = createNoteElement(note.id, note.content);
-  notesContainer.appendChild(noteElement);
-});
-
-addNoteButton.addEventListener("click", () => addNote());
+const notesContainer = document.getElementById("app"); // 전체 컨테이너
+const addNoteButton = document.querySelector(".add-note"); // 추가버튼
 
 function getNotes() {
   return JSON.parse(localStorage.getItem("stickynotes-notes") || "[]");
 } // 로컬 스트리지 특정 key값 데이터 얻기
 
+
 function saveNotes(notes) {
   localStorage.setItem("stickynotes-notes", JSON.stringify(notes));
 } // value 값을 JSON 문자열로 변환하여 로컬 스트리지에 저장
+
+function deleteNote(id, newDiv) {
+  const notes = getNotes().filter((note) => note.id !== id);
+
+  saveNotes(notes);
+  notesContainer.removeChild(newDiv);
+
+}
+
+function updateNote(id, newContent) {
+  const notes = getNotes();
+  const targetNote = notes.filter((note) => note.id === id)[0];
+
+  targetNote.content = newContent;
+  saveNotes(notes);
+}
 
 function createNoteElement(id, content) {
   const newDiv = document.createElement('div');
@@ -42,6 +52,11 @@ function createNoteElement(id, content) {
   return newDiv;
 }
 
+getNotes().forEach((note) => {
+  const noteElement = createNoteElement(note.id, note.content);
+  notesContainer.appendChild(noteElement);
+});
+
 function addNote() {
   const notes = getNotes();
   const noteObject = {
@@ -56,18 +71,4 @@ function addNote() {
   saveNotes(notes);
 }
 
-function updateNote(id, newContent) {
-  const notes = getNotes();
-  const targetNote = notes.filter((note) => note.id == id)[0];
-
-  targetNote.content = newContent;
-  saveNotes(notes);
-}
-
-function deleteNote(id, newDiv) {
-  const notes = getNotes().filter((note) => note.id != id);
-
-  saveNotes(notes);
-  notesContainer.removeChild(newDiv);
-
-}
+addNoteButton.addEventListener("click", () => addNote());
